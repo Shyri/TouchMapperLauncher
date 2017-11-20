@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 public class CommandLineExecutor {
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
+
     public static class Command {
         private String[] command;
         private CommandLineCallback callback;
@@ -53,11 +54,17 @@ public class CommandLineExecutor {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                try {
+                    join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         };
     }
 
-    interface CommandLineCallback {
+    public interface CommandLineCallback {
         void addResult(String result);
     }
 }
