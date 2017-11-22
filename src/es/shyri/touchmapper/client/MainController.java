@@ -1,5 +1,7 @@
 package es.shyri.touchmapper.client;
 
+import com.sun.javafx.application.PlatformImpl;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -8,8 +10,6 @@ import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import es.shyri.touchmapper.client.adb.Adb;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -43,15 +43,13 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadConfigFile.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                selectedFile = fileChooser.showOpenDialog(loadConfigFile.getScene()
-                                                                        .getWindow());
-
-                if (selectedFile != null) {
-                    fileNameText.setText("File: " + selectedFile.getPath());
-                }
+        loadConfigFile.setOnAction(event -> {
+            selectedFile = fileChooser.showOpenDialog(loadConfigFile.getScene()
+                                                                    .getWindow());
+            if (selectedFile != null) {
+                fileNameText.setText("File: " + selectedFile.getPath());
+            } else {
+                fileNameText.setText("File: none");
             }
         });
     }
@@ -78,15 +76,22 @@ public class MainController implements Initializable {
 
     private void sendFile() throws IOException {
         if (selectedFile != null) {
-            //            fileNameText.setText("File: " + selectedFile.getPath());
-            //                    openFile(file);
             adb.pushFile(IPTextField.getText(), selectedFile.getPath(),
                          "/storage/self/primary/Android/data/es.shyri.touchmapper/files/touchconfigs/" +
                          selectedFile.getName(), result -> {
                         log(result);
                         hideProgress();
+                        try {
+                            logcat();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     });
         }
+    }
+
+    private void logcat() throws IOException {
+        adb.logcat(IPTextField.getText(), result -> log(result));
     }
 
     private void log(String log) {
@@ -94,7 +99,7 @@ public class MainController implements Initializable {
         cal.add(Calendar.DATE, 1);
         SimpleDateFormat format1 = new SimpleDateFormat("HH:mm:ss");
 
-        logTextArea.appendText(format1.format(cal.getTime()) + " " + log);
+        PlatformImpl.runAndWait(() -> logTextArea.appendText(format1.format(cal.getTime()) + " " + log));
     }
 
     private void showProgress() {

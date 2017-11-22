@@ -45,12 +45,23 @@ public class CommandLineExecutor {
                 String line;
                 try {
                     StringBuilder stringBuilder = new StringBuilder();
-                    while ((line = input.readLine()) != null) {
-                        stringBuilder.append(line);
-                        stringBuilder.append(System.getProperty("line.separator"));
+                    while (process.isAlive()) {
+
+                        long time = System.currentTimeMillis();
+
+                        while ((line = input.readLine()) != null) {
+                            stringBuilder.append(line);
+                            stringBuilder.append(System.getProperty("line.separator"));
+
+                            if (System.currentTimeMillis() - time > 500) {
+                                break;
+                            }
+                        }
+
+                        commandLineCallback.addResult(stringBuilder.toString());
                     }
 
-                    commandLineCallback.addResult(stringBuilder.toString());
+                    //                    commandLineCallback.addResult(stringBuilder.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -61,7 +72,9 @@ public class CommandLineExecutor {
                     e.printStackTrace();
                 }
             }
-        };
+        }
+
+                ;
     }
 
     public interface CommandLineCallback {

@@ -31,6 +31,11 @@ public class Adb {
                                                                                         .run();
     }
 
+    public void logcat(String IPDest, CommandLineExecutor.CommandLineCallback callback) throws IOException {
+        new CommandLineExecutor.Command("adb", "-s", IPDest, "logcat").addCallback(callback)
+                                                                      .run();
+    }
+
     private ArrayList<Device> parseDevices(String devices) {
         ArrayList<Device> deviceList = new ArrayList<>();
         try (Scanner scanner = new Scanner(devices)) {
