@@ -8,8 +8,6 @@ public class CommandLineThread extends Thread {
     private Process process;
     private CommandLineRunner.CommandLineCallback commandLineCallback;
 
-    private boolean scanningLines = false;
-
     CommandLineThread(Process process, CommandLineRunner.CommandLineCallback commandLineCallback) {
         this.process = process;
         this.commandLineCallback = commandLineCallback;
@@ -22,14 +20,9 @@ public class CommandLineThread extends Thread {
         try {
             StringBuilder stringBuilder = new StringBuilder();
             while (process.isAlive()) {
-                System.out.println("Process alive ");
                 long time = System.currentTimeMillis();
 
-                System.out.println("Waiting for shit");
-
                 while ((line = input.readLine()) != null) {
-                    System.out.println("Line: " + line);
-
                     stringBuilder.append(line);
                     stringBuilder.append(System.getProperty("line.separator"));
 
@@ -38,39 +31,19 @@ public class CommandLineThread extends Thread {
                     }
                 }
 
-                System.out.println("No more shit");
-
                 commandLineCallback.addResult(stringBuilder.toString());
             }
-            System.out.println("Process killed");
             process.getInputStream()
                    .close();
-            //                    commandLineCallback.addResult(stringBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("IO Exception");
         }
 
         try {
-            System.out.println("Join process");
             join();
         } catch (InterruptedException e) {
-            System.out.println("Interrupt Exception");
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-    }
-
-    @Override
-    public void interrupt() {
-        System.out.println("Interrupt requested");
-        try {
-            process.getInputStream()
-                   .close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        process.destroy();
-        super.interrupt();
     }
 }

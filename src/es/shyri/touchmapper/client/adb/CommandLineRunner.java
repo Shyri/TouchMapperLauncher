@@ -40,47 +40,6 @@ public class CommandLineRunner {
     private static Thread watchProcess(final Process processs, CommandLineCallback commandLineCallback) {
         process = processs;
         return new CommandLineThread(processs, commandLineCallback);
-        //        return new Thread() {
-        //            public void run() {
-        //                BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        //                String line;
-        //                try {
-        //                    StringBuilder stringBuilder = new StringBuilder();
-        //                    while (process.isAlive()) {
-        //                        System.out.println("Process alive");
-        //                        long time = System.currentTimeMillis();
-        //
-        //                        System.out.println("Waiting for shit");
-        //
-        //                        while ((line = input.readLine()) != null) {
-        //                            stringBuilder.append(line);
-        //                            stringBuilder.append(System.getProperty("line.separator"));
-        //
-        //                            if (System.currentTimeMillis() - time > 500) {
-        //                                break;
-        //                            }
-        //                        }
-        //                        System.out.println("No more shit");
-        //
-        //                        commandLineCallback.addResult(stringBuilder.toString());
-        //                    }
-        //                    System.out.println("Process killed");
-        //
-        //                    //                    commandLineCallback.addResult(stringBuilder.toString());
-        //                } catch (IOException e) {
-        //                    e.printStackTrace();
-        //                    System.out.println("IO Exception");
-        //                }
-        //
-        //                try {
-        //                    System.out.println("Join process");
-        //                    join();
-        //                } catch (InterruptedException e) {
-        //                    e.printStackTrace();
-        //                    System.out.println(e.getMessage());
-        //                }
-        //            }
-        //        };
     }
 
     public static void terminate() {
