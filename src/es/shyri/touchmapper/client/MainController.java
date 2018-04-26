@@ -28,6 +28,8 @@ public class MainController implements Initializable {
     @FXML
     Button connectAdb;
     @FXML
+    Button disconnectAdb;
+    @FXML
     Text fileNameText;
     @FXML
     TextField IPTextField;
@@ -54,6 +56,10 @@ public class MainController implements Initializable {
         });
     }
 
+    public void terminate() {
+        adb.terminate();
+    }
+
     @FXML
     public void onConnectClick() throws IOException {
         showProgress();
@@ -74,15 +80,19 @@ public class MainController implements Initializable {
         });
     }
 
+    @FXML
+    public void onDisconnectClick() {
+        showConnectEnabled();
+        terminate();
+    }
+
     private void sendFile() throws IOException {
         if (selectedFile != null) {
             adb.pushFile(IPTextField.getText(), selectedFile.getPath(),
-                         "/storage/self/primary/Android/data/es.shyri.touchmapper/files/touchconfigs/" +
-                         selectedFile.getName(), result -> {
+                         "/storage/self/primary/Android/data/es.shyri.touchmapper/files/mapping.json", result -> {
                         log(result);
-                        hideProgress();
                         try {
-                            logcat();
+                            runMapper();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -90,8 +100,33 @@ public class MainController implements Initializable {
         }
     }
 
-    private void logcat() throws IOException {
-        adb.logcat(IPTextField.getText(), result -> log(result));
+    private void runMapper() throws IOException {
+        adb.runMapper(IPTextField.getText(), "1", result -> {
+            if ("Aborted \n".equals(result)) {
+                try {
+                    adb.runMapper(IPTextField.getText(), "2", result2 -> {
+                        if ("Aborted \n".equals(result2)) {
+
+                        } else {
+                            hideProgress();
+                            showDisconnectEnabled();
+                        }
+                        log(result);
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log(result);
+            } else {
+                hideProgress();
+                showDisconnectEnabled();
+                log(result);
+            }
+
+            // TODO Killed case
+
+            // TODO Unkown case
+        });
     }
 
     private void log(String log) {
@@ -99,13 +134,24 @@ public class MainController implements Initializable {
         cal.add(Calendar.DATE, 1);
         SimpleDateFormat format1 = new SimpleDateFormat("HH:mm:ss");
 
-        PlatformImpl.runAndWait(() -> logTextArea.appendText(format1.format(cal.getTime()) + " " + log));
+        //        if (logTextArea.getText()
+        //                       .length() > 1000) {
+        //            logTextArea.setText(logTextArea.getText()
+        //                                           .substring(1000));
+        //        }
+
+        try {
+            PlatformImpl.runAndWait(() -> logTextArea.appendText(format1.format(cal.getTime()) + " " + log));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showProgress() {
         loadConfigFile.setDisable(true);
         connectAdb.setDisable(true);
         IPTextField.setDisable(true);
+        disconnectAdb.setDisable(true);
         loadingProgressBar.setVisible(true);
     }
 
@@ -114,5 +160,19 @@ public class MainController implements Initializable {
         connectAdb.setDisable(false);
         IPTextField.setDisable(false);
         loadingProgressBar.setVisible(false);
+    }
+
+    private void showConnectEnabled() {
+        loadConfigFile.setDisable(false);
+        connectAdb.setDisable(false);
+        disconnectAdb.setDisable(true);
+        IPTextField.setDisable(false);
+    }
+
+    private void showDisconnectEnabled() {
+        loadConfigFile.setDisable(true);
+        connectAdb.setDisable(true);
+        disconnectAdb.setDisable(false);
+        IPTextField.setDisable(true);
     }
 }

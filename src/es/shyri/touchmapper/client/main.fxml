@@ -9,6 +9,7 @@
     <Text fx:id="Text" text="Enter device IP"/>
     <TextField fx:id="IPTextField"/>
     <Button fx:id="connectAdb" layoutX="201.0" layoutY="182.0" mnemonicParsing="false" text="Connect" onAction="#onConnectClick"/>
+    <Button fx:id="disconnectAdb" layoutX="201.0" layoutY="182.0" mnemonicParsing="false" text="Disconnect" onAction="#onDisconnectClick"/>
     <ProgressBar fx:id="loadingProgressBar" visible="false"/>
     <TextArea fx:id="logTextArea"/>
 </VBox>
