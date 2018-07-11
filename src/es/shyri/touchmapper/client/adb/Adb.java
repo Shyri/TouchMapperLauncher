@@ -8,8 +8,7 @@ import java.util.Scanner;
  * Created by shyri on 11/09/17.
  */
 public class Adb {
-    //sh -c "CLASSPATH=/data/app/es.shyri.touchmapper-1/base.apk /system/bin/app_process32 /system/bin es.shyri
-    // .touchmapper.Main"
+    //sh -c "CLASSPATH=/data/app/es.shyri.touchmapper-1/base.apk /system/bin/app_process32 /system/bin es.shyri.touchmapper.Main"
 
     public void connectDevice(String IP, CommandLineRunner.CommandLineCallback callback) throws IOException {
         new CommandLineRunner.Command("adb", "connect", IP + ":5555").addCallback(callback)

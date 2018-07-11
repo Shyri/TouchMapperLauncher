@@ -111,7 +111,7 @@ public class MainController implements Initializable {
                             hideProgress();
                             showDisconnectEnabled();
                         }
-                        log(result);
+                        log(result2);
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
