@@ -53,6 +53,6 @@ public class CommandLineRunner {
     }
 
     public interface CommandLineCallback {
-        void addResult(String result);
+        void addResult(String result) throws IOException;
     }
 }

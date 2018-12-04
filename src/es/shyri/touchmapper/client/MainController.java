@@ -101,31 +101,16 @@ public class MainController implements Initializable {
     }
 
     private void runMapper() throws IOException {
-        adb.runMapper(IPTextField.getText(), "1", result -> {
-            if ("Aborted \n".equals(result)) {
-                try {
-                    adb.runMapper(IPTextField.getText(), "2", result2 -> {
-                        if ("Aborted \n".equals(result2)) {
-
-                        } else {
-                            hideProgress();
-                            showDisconnectEnabled();
-                        }
-                        log(result2);
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                log(result);
-            } else {
+        adb.getApkId(IPTextField.getText(), apkId->{
+            adb.runMapper(IPTextField.getText(), apkId, result -> {
                 hideProgress();
                 showDisconnectEnabled();
                 log(result);
-            }
 
-            // TODO Killed case
+                // TODO Killed case
 
-            // TODO Unkown case
+                // TODO Unkown case
+            });
         });
     }
 

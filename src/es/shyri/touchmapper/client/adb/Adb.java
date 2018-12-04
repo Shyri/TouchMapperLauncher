@@ -35,10 +35,16 @@ public class Adb {
                                                                     .run();
     }
 
+    public void getApkId(String IPDest, ApkIdCallback callback) throws IOException {
+        new CommandLineRunner.Command("adb", "-s", IPDest, "shell", "pm path es.shyri.touchmapper").addCallback(result -> {
+            callback.onResult(parseAPKId(result));
+        }).run();
+    }
+
     public void runMapper(String IPDest, String id, CommandLineRunner.CommandLineCallback callback) throws IOException {
 
         new CommandLineRunner.Command("adb", "-s", IPDest, "shell",
-                                        "sh -c \"CLASSPATH=/data/app/es.shyri" + ".touchmapper-" + id + "/base.apk " +
+                                        "sh -c \"CLASSPATH=/data/app/es.shyri.touchmapper" + id + " " +
                                         "/system/bin/app_process32 " +
                                         "/system/bin es.shyri.touchmapper.Main\"").addCallback(callback)
                                                                                   .run();
@@ -46,6 +52,10 @@ public class Adb {
 
     public void terminate() {
         CommandLineRunner.terminate();
+    }
+
+    private String parseAPKId(String adbResult) {
+        return adbResult.substring(adbResult.indexOf("-")).replace("\n", "");
     }
 
     private ArrayList<Device> parseDevices(String devices) {
@@ -72,5 +82,9 @@ public class Adb {
 
     public interface DevicesCallback {
         void onDevices(ArrayList<Device> devices);
+    }
+
+    public interface ApkIdCallback {
+        void onResult(String apkId) throws IOException;
     }
 }
