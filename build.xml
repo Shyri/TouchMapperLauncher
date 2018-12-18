@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="Touch Mapper Launcher" default="default" basedir="."
+         xmlns:fx="javafx:com.sun.javafx.tools.ant" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="javafx:com.sun.javafx.tools.ant ">
+
+    <property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home"/>
+
+    <path id="CLASSPATH">
+        <pathelement location="lib/lucene-core-3.2.0.jar"/>
+        <pathelement location="lib/lucene-grouping-3.2.0.jar"/>
+        <pathelement path="classes"/>
+    </path>
+
+    <property name="build.src.dir" value="src"/>
+    <property name="build.classes.dir" value="classes"/>
+    <property name="build.dist.dir" value="dist"/>
+
+    <target name="default" depends="clean,compile">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant"
+                 classpath="${JAVA_HOME}/lib/ant-javafx.jar"/>
+
+        <fx:application id="touchmapperlauncher"
+                        name="Touch Mapper Launcher"
+                        mainClass="es.shyri.touchmapper.client.Main"/>
+
+        <fx:resources id="appRes">
+            <fx:fileset dir="${build.dist.dir}" includes="touchmapperlauncher.jar"/>
+            <fx:fileset dir="${build.classes.dir}"/>
+        </fx:resources>
+
+        <fx:jar destfile="${build.dist.dir}/touchmapperlauncher.jar">
+            <fx:application refid="touchmapperlauncher"/>
+            <fx:resources refid="appRes"/>
+            <fx:fileset dir="${build.classes.dir}"/>
+        </fx:jar>
+
+        <fx:deploy outdir="." embedJNLP="true"
+                   outfile="touchmapperlauncher"
+                   nativeBundles="all"
+                   verbose="true">
+            <fx:platform basedir="${JAVA_HOME}"/>
+            <fx:application refId="touchmapperlauncher"/>
+            <fx:resources refid="appRes"/>
+        </fx:deploy>
+
+    </target>
+
+    <target name="clean">
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.dist.dir}"/>
+
+        <delete>
+            <fileset dir="${build.classes.dir}" includes="**/*"/>
+            <fileset dir="${build.dist.dir}" includes="**/*"/>
+        </delete>
+
+    </target>
+
+    <target name="compile" depends="clean">
+
+        <javac includeantruntime="false"
+               srcdir="${build.src.dir}"
+               destdir="${build.classes.dir}"
+               fork="yes"
+               executable="${JAVA_HOME}/bin/javac"
+               source="1.8"
+               debug="on"
+               classpathref="CLASSPATH">
+        </javac>
+
+        <!-- Copy resources to build.classes.dir  -->
+
+        <copy todir="${build.classes.dir}">
+            <fileset dir="src" includes="**/*.fxml"/>
+        </copy>
+
+    </target>
+
+</project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="touchmapperlauncher.jnlp">
+  <information>
+    <title>Touch Mapper Launcher</title>
+    <vendor>Unknown</vendor>
+    <description>Touch Mapper Launcher</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="touchmapperlauncher.jar" size="15112" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="es.shyri.touchmapper.client.Main"  name="Touch Mapper Launcher" />
+  <update check="background"/>
+</jnlp>

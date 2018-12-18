@@ -119,6 +119,7 @@ public class MainController implements Initializable {
                 return;
             }
             adb.runMapper(IPTextField.getText(), apkId, result -> {
+                log("Connected!");
                 hideProgress();
                 showDisconnectEnabled();
                 if(verboseCheckBox.isSelected()) {
