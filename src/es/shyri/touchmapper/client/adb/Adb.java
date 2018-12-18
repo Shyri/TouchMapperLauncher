@@ -14,6 +14,9 @@ public class Adb {
         new CommandLineRunner.Command("adb", "connect", IP + ":5555").addCallback(callback)
                                                                      .run();
     }
+    public void disconnect(CommandLineRunner.CommandLineCallback callback) throws IOException {
+        new CommandLineRunner.Command("adb", "disconnect").addCallback(callback).run();
+    }
 
     public void getDevicesList(DevicesCallback callback) throws IOException {
         new CommandLineRunner.Command("adb", "devices", "-l").addCallback(result -> {

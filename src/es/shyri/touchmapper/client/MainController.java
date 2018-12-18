@@ -68,6 +68,14 @@ public class MainController implements Initializable {
 
     public void terminate() {
         adb.terminate();
+        try {
+            adb.disconnect(result -> {
+                log(result);
+                showConnectEnabled();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -93,7 +101,7 @@ public class MainController implements Initializable {
     @FXML
     public void onDisconnectClick() {
         terminate();
-        showConnectEnabled();
+        disconnectAdb.setDisable(true);
     }
 
     private void sendFile() throws IOException {
@@ -119,7 +127,6 @@ public class MainController implements Initializable {
                 return;
             }
             adb.runMapper(IPTextField.getText(), apkId, result -> {
-                log("Connected!");
                 hideProgress();
                 showDisconnectEnabled();
                 if(verboseCheckBox.isSelected()) {

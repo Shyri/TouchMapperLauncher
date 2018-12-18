@@ -50,6 +50,8 @@ public class CommandLineRunner {
         if (executor != null) {
             executor.shutdownNow();
         }
+
+        executor = Executors.newSingleThreadExecutor();
     }
 
     public interface CommandLineCallback {
