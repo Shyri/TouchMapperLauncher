@@ -55,6 +55,9 @@ public class Adb {
     }
 
     private String parseAPKId(String adbResult) {
+        if(adbResult.isEmpty()) {
+            return null;
+        }
         return adbResult.substring(adbResult.indexOf("-")).replace("\n", "");
     }
 

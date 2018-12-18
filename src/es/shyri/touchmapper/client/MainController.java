@@ -12,10 +12,7 @@ import java.util.ResourceBundle;
 import es.shyri.touchmapper.client.adb.Adb;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
@@ -37,6 +34,8 @@ public class MainController implements Initializable {
     TextArea logTextArea;
     @FXML
     ProgressBar loadingProgressBar;
+    @FXML
+    CheckBox verboseCheckBox;
 
     final FileChooser fileChooser = new FileChooser();
     final public Adb adb = new Adb();
@@ -45,13 +44,24 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initViews();
         loadConfigFile.setOnAction(event -> {
             selectedFile = fileChooser.showOpenDialog(loadConfigFile.getScene()
                                                                     .getWindow());
             if (selectedFile != null) {
                 fileNameText.setText("File: " + selectedFile.getPath());
+                IPTextField.setDisable(false);
             } else {
                 fileNameText.setText("File: none");
+                IPTextField.setDisable(true);
+            }
+        });
+
+        IPTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(IPTextField.getText().isEmpty()) {
+                connectAdb.setDisable(true);
+            } else {
+                connectAdb.setDisable(false);
             }
         });
     }
@@ -82,8 +92,8 @@ public class MainController implements Initializable {
 
     @FXML
     public void onDisconnectClick() {
-        showConnectEnabled();
         terminate();
+        showConnectEnabled();
     }
 
     private void sendFile() throws IOException {
@@ -102,13 +112,20 @@ public class MainController implements Initializable {
 
     private void runMapper() throws IOException {
         adb.getApkId(IPTextField.getText(), apkId->{
+            if(apkId == null || apkId.isEmpty()) {
+                log("Touch Mapper application not found");
+                hideProgress();
+                showConnectEnabled();
+                return;
+            }
             adb.runMapper(IPTextField.getText(), apkId, result -> {
                 hideProgress();
                 showDisconnectEnabled();
-                log(result);
+                if(verboseCheckBox.isSelected()) {
+                    log(result);
+                }
 
                 // TODO Killed case
-
                 // TODO Unkown case
             });
         });
@@ -119,6 +136,7 @@ public class MainController implements Initializable {
         cal.add(Calendar.DATE, 1);
         SimpleDateFormat format1 = new SimpleDateFormat("HH:mm:ss");
 
+        // TODO It reaches a point where the amount of log hangs the app but I coulnd't find a way to purge it
         //        if (logTextArea.getText()
         //                       .length() > 1000) {
         //            logTextArea.setText(logTextArea.getText()
@@ -130,6 +148,12 @@ public class MainController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initViews() {
+        connectAdb.setDisable(true);
+        disconnectAdb.setDisable(true);
+        IPTextField.setDisable(true);
     }
 
     private void showProgress() {

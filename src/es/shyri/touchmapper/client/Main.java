@@ -23,7 +23,7 @@ public class Main extends Application {
         Parent root = fxmlLoader.load(location.openStream());
         primaryStage.setTitle("Touch Mapper Launcher");
         primaryStage.show();
-        Scene scene = new Scene(root, 500, 275);
+        Scene scene = new Scene(root, 1000, 450);
         primaryStage.setScene(scene);
     }
 
