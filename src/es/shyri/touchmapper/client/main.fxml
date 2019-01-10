@@ -5,6 +5,7 @@
         <Insets top="15" right="15" bottom="15" left="15"/>
     </padding>
 
+    <Button fx:id="adbFilePath" text="Select ADB binary"/>
     <Button fx:id="loadConfigFile" text="Load File"/>
     <Text fx:id="fileNameText" text="File: none"/>
     <Text fx:id="Text" text="Enter device IP"/>

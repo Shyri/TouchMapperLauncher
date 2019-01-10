@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="touchmapperlauncher.jar" size="15112" download="eager" />
+    <jar href="touchmapperlauncher.jar" size="15617" download="eager" />
   </resources>
   <jfx:javafx-desc  width="0" height="0" main-class="es.shyri.touchmapper.client.Main"  name="Touch Mapper Launcher" />
   <update check="background"/>

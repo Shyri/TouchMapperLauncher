@@ -21,6 +21,8 @@ import javafx.stage.FileChooser;
  */
 public class MainController implements Initializable {
     @FXML
+    Button adbFilePath;
+    @FXML
     Button loadConfigFile;
     @FXML
     Button connectAdb;
@@ -38,8 +40,9 @@ public class MainController implements Initializable {
     CheckBox verboseCheckBox;
 
     final FileChooser fileChooser = new FileChooser();
-    final public Adb adb = new Adb();
+    public Adb adb;
 
+    private File adbPath;
     private File selectedFile;
 
     @Override
@@ -55,6 +58,11 @@ public class MainController implements Initializable {
                 fileNameText.setText("File: none");
                 IPTextField.setDisable(true);
             }
+        });
+
+        adbFilePath.setOnAction(event -> {
+            adbPath = fileChooser.showOpenDialog(loadConfigFile.getScene()
+                    .getWindow());
         });
 
         IPTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -79,23 +87,30 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void onConnectClick() throws IOException {
+    public void onConnectClick() {
+        this.adb = new Adb(adbPath);
         showProgress();
-        adb.connectDevice(IPTextField.getText(), result -> {
-            if (result != null && result.contains("connected")) {
-                log(result);
-                try {
-                    sendFile();
-                } catch (IOException e) {
-                    log(e.getMessage());
-                    e.printStackTrace();
+        try {
+            adb.connectDevice(IPTextField.getText(), result -> {
+                if (result != null && result.contains("connected")) {
+                    log(result);
+                    try {
+                        sendFile();
+                    } catch (IOException e) {
+                        log(e.getMessage() + "\n");
+                        e.printStackTrace();
+                        hideProgress();
+                    }
+                } else {
+                    log("Unable to connect device\n");
                     hideProgress();
                 }
-            } else {
-                log("Unable to connect device\n");
-                hideProgress();
-            }
-        });
+            });
+        } catch (IOException e) {
+            hideProgress();
+            e.printStackTrace();
+            log("Unable to connect device: " + e.getMessage() + "\n");
+        }
     }
 
     @FXML
@@ -112,7 +127,9 @@ public class MainController implements Initializable {
                         try {
                             runMapper();
                         } catch (IOException e) {
+                            log(e.getMessage());
                             e.printStackTrace();
+                            hideProgress();
                         }
                     });
         }
@@ -121,7 +138,7 @@ public class MainController implements Initializable {
     private void runMapper() throws IOException {
         adb.getApkId(IPTextField.getText(), apkId->{
             if(apkId == null || apkId.isEmpty()) {
-                log("Touch Mapper application not found");
+                log("Touch Mapper application not found\n");
                 hideProgress();
                 showConnectEnabled();
                 return;

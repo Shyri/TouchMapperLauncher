@@ -1,5 +1,6 @@
 package es.shyri.touchmapper.client.adb;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -8,18 +9,25 @@ import java.util.Scanner;
  * Created by shyri on 11/09/17.
  */
 public class Adb {
-    //sh -c "CLASSPATH=/data/app/es.shyri.touchmapper-1/base.apk /system/bin/app_process32 /system/bin es.shyri.touchmapper.Main"
+    private String adbPath;
+    public Adb(File adbPath) {
+        if(adbPath == null) {
+            this.adbPath = "adb";
+        } else {
+            this.adbPath = adbPath.getPath();
+        }
+    }
 
     public void connectDevice(String IP, CommandLineRunner.CommandLineCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "connect", IP + ":5555").addCallback(callback)
+        new CommandLineRunner.Command(adbPath, "connect", IP + ":5555").addCallback(callback)
                                                                      .run();
     }
     public void disconnect(CommandLineRunner.CommandLineCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "disconnect").addCallback(callback).run();
+        new CommandLineRunner.Command(adbPath, "disconnect").addCallback(callback).run();
     }
 
     public void getDevicesList(DevicesCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "devices", "-l").addCallback(result -> {
+        new CommandLineRunner.Command(adbPath, "devices", "-l").addCallback(result -> {
             callback.onDevices(parseDevices(result));
         })
                                                              .run();
@@ -29,24 +37,24 @@ public class Adb {
                          String filePath,
                          String destPath,
                          CommandLineRunner.CommandLineCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "-s", IPDest, "push", filePath, destPath).addCallback(callback)
+        new CommandLineRunner.Command(adbPath, "-s", IPDest, "push", filePath, destPath).addCallback(callback)
                                                                                       .run();
     }
 
     public void logcat(String IPDest, CommandLineRunner.CommandLineCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "-s", IPDest, "logcat").addCallback(callback)
+        new CommandLineRunner.Command(adbPath, "-s", IPDest, "logcat").addCallback(callback)
                                                                     .run();
     }
 
     public void getApkId(String IPDest, ApkIdCallback callback) throws IOException {
-        new CommandLineRunner.Command("adb", "-s", IPDest, "shell", "pm path es.shyri.touchmapper").addCallback(result -> {
+        new CommandLineRunner.Command(adbPath, "-s", IPDest, "shell", "pm path es.shyri.touchmapper").addCallback(result -> {
             callback.onResult(parseAPKId(result));
         }).run();
     }
 
     public void runMapper(String IPDest, String id, CommandLineRunner.CommandLineCallback callback) throws IOException {
 
-        new CommandLineRunner.Command("adb", "-s", IPDest, "shell",
+        new CommandLineRunner.Command(adbPath, "-s", IPDest, "shell",
                                         "sh -c \"CLASSPATH=/data/app/es.shyri.touchmapper" + id + " " +
                                         "/system/bin/app_process32 " +
                                         "/system/bin es.shyri.touchmapper.Main\"").addCallback(callback)
